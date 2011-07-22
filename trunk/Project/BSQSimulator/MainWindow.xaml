@@ -1,0 +1,31 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:my="http://schemas.microsoft.com/surface/2008" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" x:Class="BSQSimulator.MainWindow"
+        Title="BSQSimulator" Height="768" Width="1360" Background="{x:Null}" ResizeMode="NoResize" WindowStyle="None" Left="0" Top="0" AllowsTransparency="True" Topmost="True">
+    <Grid>
+		<my:ScatterView x:Name="scatterView" d:LayoutOverrides="Width, Height">
+			<my:ScatterViewItem x:Name="mainItem" Orientation="0" Center="100,150" Width="200" Height="300" MaxWidth="400" MaxHeight="300" MinWidth="80">
+				<Viewbox>
+					<Canvas Width="200" Height="300" d:LayoutOverrides="Width, Height">
+						<my:SurfaceInkCanvas x:Name="surfaceInkCanvas1" Height="300" Width="200" />
+						<Grid Height="38" Width="200">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="0.75*"/>
+								<ColumnDefinition Width="0.25*"/>
+							</Grid.ColumnDefinitions>
+							<my:SurfaceButton x:Name="bttBehavior" Content="-" Margin="0" Padding="0,-5,0,0" FontFamily="Segoe UI Light" FontSize="20" VerticalAlignment="Center" Grid.Column="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="#4CFFFFFF" Foreground="#CC000000"/>
+							<Label Content="BSQSimulator" Margin="0" d:LayoutOverrides="Height" VerticalContentAlignment="Center" Background="#4DFFFFFF" Foreground="#CC000000" FontSize="17" FontFamily="Segoe UI Light" Padding="20,5,5,5" HorizontalAlignment="Left" Width="150"/>
+						</Grid>
+						<my:SurfaceTextBox Canvas.Left="8" Canvas.Top="45" x:Name="txtIp" Width="107" Margin="0" Text="127.0.0.1" HorizontalAlignment="Center" Padding="6,0,0,0" VerticalContentAlignment="Center" FontFamily="Segoe UI Light" BorderThickness="5,2,0,2" FontSize="14" IsReadOnly="True" />
+						<my:SurfaceButton Canvas.Top="262" Content="Connect..." Height="24" x:Name="bttConnect" Width="131" Margin="0" Padding="8,0,0,6" FontFamily="Segoe UI Light" FontSize="14" VerticalContentAlignment="Bottom" Click="bttConnect_Click" />
+						<my:SurfaceButton Canvas.Top="262" Content="Close" Height="24" x:Name="bttClose" Width="65" Margin="0" Padding="8,0,0,6" FontFamily="Segoe UI Light" FontSize="14" VerticalContentAlignment="Bottom" Canvas.Left="135" Click="bttClose_Click" />
+						<my:SurfaceTextBox Canvas.Left="115" Canvas.Top="45" x:Name="txtPort" Width="77" Margin="0" Text="3333" Padding="6,0,0,0" VerticalContentAlignment="Center" FontFamily="Segoe UI Light" BorderThickness="0,2,5,2" FontSize="14" />
+						<Label x:Name="lblContent"  Content="Enter the IP &amp; Port of host TUIO&#xa;Click connect... and enjoy !&#xa;Thank you for using...&#xa;&#x9;&#x9;&#x9;BSQ" Canvas.Left="8" Canvas.Top="175" Width="184" Height="83" Foreground="#CC000000"/>
+					</Canvas>
+				</Viewbox>
+			</my:ScatterViewItem>
+		</my:ScatterView>
+		<Canvas x:Name="drawCanvas"/>
+	</Grid>
+</Window>
