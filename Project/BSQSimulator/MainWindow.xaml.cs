@@ -10,6 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Threading;
 using System.Windows.Shapes;
 using Microsoft.Win32;
+using System.IO;
 
 namespace BSQSimulator
 {
@@ -26,12 +27,19 @@ namespace BSQSimulator
 
         public MainWindow()
         {
+            DrawLogSystem("Start program");
             InitializeComponent();
+
+            DrawLogSystem("Component init: Done");
 
             BSQSim.Init();
 
+            DrawLogSystem("BSQSim lib init: Done");
+
             Width = DISPLAY_W = BSQSim.Bounding.Width;
             Height = DISPLAY_H = BSQSim.Bounding.Height;
+
+            DrawLogSystem("Set width height: Done");
 
             SystemEvents.DisplaySettingsChanging += new EventHandler(SystemEvents_DisplaySettingsChanging);
 
@@ -40,6 +48,9 @@ namespace BSQSimulator
 
             this.surfaceInkCanvas1.PreviewTouchUp += (e, a) => { surfaceInkCanvas1.Strokes.Clear(); };
             this.surfaceInkCanvas1.PreviewMouseLeftButtonUp += (e, a) => { surfaceInkCanvas1.Strokes.Clear(); };
+            this.StateChanged += new EventHandler(MainWindow_StateChanged);
+
+            DrawLogSystem("Event init: Done");
 
             icon = new System.Windows.Forms.NotifyIcon();
             icon.BalloonTipText = "Minimized... Click tray icon to show";
@@ -48,13 +59,23 @@ namespace BSQSimulator
             icon.Text = "BSQSimulator";
             icon.Click += new EventHandler(icon_Click);
 
-            this.StateChanged += new EventHandler(MainWindow_StateChanged);
+            DrawLogSystem("Icontray init: Done");
+            DrawLogSystem("BSQSimulator init ! Resolution: " + DISPLAY_W + " " + DISPLAY_H);
+        }
+
+        void DrawLogSystem(string _content)
+        {
+            StreamWriter writer = new StreamWriter("simLog.log", true);
+            writer.WriteLine(DateTime.Now.Day.ToString() + DateTime.Now.Month.ToString() + DateTime.Now.Year.ToString() + " " + DateTime.Now.Hour + ":" + DateTime.Now.Minute + ":" + DateTime.Now.Millisecond + " " + _content);
+            writer.Close();
         }
 
         void SystemEvents_DisplaySettingsChanging(object sender, EventArgs e)
         {
             Width = DISPLAY_W = System.Windows.Forms.SystemInformation.PrimaryMonitorSize.Width;
             Height = DISPLAY_H = System.Windows.Forms.SystemInformation.PrimaryMonitorSize.Height;
+
+            DrawLogSystem("DisplaySettingsChanging: Done");
         }
 
         void MainWindow_StateChanged(object sender, EventArgs e)
@@ -98,6 +119,9 @@ namespace BSQSimulator
         {
             BSQSim.UnLoadSystem();
             if (client != null) client.disconnect();
+
+            DrawLogSystem("End program");                
+            DrawLogSystem("*----------------*");
         }
 
         /*
@@ -195,11 +219,15 @@ namespace BSQSimulator
                     client.connect();
                     bttConnect.Content = "Disconnect";
                     lblContent.Content = "Simulator has working !";
+                    DrawLogSystem("Simulator has working!");
+
                 }
                 catch (Exception e2)
                 {
                     lblContent.Content = "Can't connect to TUIO host!\nPlease change another port !";
                     client = null;
+
+                    DrawLogSystem("Simulator can't connect to TUIO host!");
                 }
             }
             else
@@ -208,6 +236,7 @@ namespace BSQSimulator
                 client = null;
                 lblContent.Content = "Simulator has stop working !";
                 bttConnect.Content = "Connect...";
+                DrawLogSystem("Simulator has stop working!");
             }
         }
     }
