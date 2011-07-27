@@ -9,7 +9,6 @@ using TUIO;
 using System.Windows.Controls;
 using System.Windows.Threading;
 using System.Windows.Shapes;
-using Microsoft.Win32;
 using System.IO;
 
 namespace BSQSimulator
@@ -32,35 +31,45 @@ namespace BSQSimulator
 
             DrawLogSystem("Component init: Done");
 
-            BSQSim.Init();
+            if (BSQSim.Init())
+            {
 
-            DrawLogSystem("BSQSim lib init: Done");
+                DrawLogSystem("BSQSim lib init: Done");
 
-            Width = DISPLAY_W = BSQSim.Bounding.Width;
-            Height = DISPLAY_H = BSQSim.Bounding.Height;
+                Width = DISPLAY_W = BSQSim.Bounding.Width;
+                Height = DISPLAY_H = BSQSim.Bounding.Height;
 
-            DrawLogSystem("Set width height: Done");
+                DrawLogSystem("Set width height: Done");
 
-            SystemEvents.DisplaySettingsChanging += new EventHandler(SystemEvents_DisplaySettingsChanging);
+                //SystemEvents.DisplaySettingsChanging += new EventHandler(SystemEvents_DisplaySettingsChanging);
 
-            this.Closing += new System.ComponentModel.CancelEventHandler(MainWindow_Closing);
-            this.KeyDown += new KeyEventHandler(MainWindow_KeyDown);
+                this.Closing += new System.ComponentModel.CancelEventHandler(MainWindow_Closing);
+                this.KeyDown += new KeyEventHandler(MainWindow_KeyDown);
 
-            this.surfaceInkCanvas1.PreviewTouchUp += (e, a) => { surfaceInkCanvas1.Strokes.Clear(); };
-            this.surfaceInkCanvas1.PreviewMouseLeftButtonUp += (e, a) => { surfaceInkCanvas1.Strokes.Clear(); };
-            this.StateChanged += new EventHandler(MainWindow_StateChanged);
+                this.surfaceInkCanvas1.PreviewTouchUp += (e, a) => { surfaceInkCanvas1.Strokes.Clear(); };
+                this.surfaceInkCanvas1.PreviewMouseLeftButtonUp += (e, a) => { surfaceInkCanvas1.Strokes.Clear(); };
+                this.StateChanged += new EventHandler(MainWindow_StateChanged);
 
-            DrawLogSystem("Event init: Done");
+                DrawLogSystem("Event init: Done");
 
-            icon = new System.Windows.Forms.NotifyIcon();
-            icon.BalloonTipText = "Minimized... Click tray icon to show";
-            icon.BalloonTipTitle = "BSQSimulator";
-            icon.Icon = new System.Drawing.Icon("Logo.ico");
-            icon.Text = "BSQSimulator";
-            icon.Click += new EventHandler(icon_Click);
+                icon = new System.Windows.Forms.NotifyIcon();
+                icon.BalloonTipText = "Minimized... Click tray icon to show";
+                icon.BalloonTipTitle = "BSQSimulator";
+                icon.Icon = new System.Drawing.Icon("Logo.ico");
+                icon.Text = "BSQSimulator";
+                icon.Click += new EventHandler(icon_Click);
 
-            DrawLogSystem("Icontray init: Done");
-            DrawLogSystem("BSQSimulator init ! Resolution: " + DISPLAY_W + " " + DISPLAY_H);
+                DrawLogSystem("Icontray init: Done");
+                DrawLogSystem("BSQSimulator init ! Resolution: " + DISPLAY_W + " " + DISPLAY_H);
+            }
+            else
+            {
+                DrawLogSystem("Can't start simulator!");
+                DrawLogSystem("End program");
+                DrawLogSystem("*----------------*");
+                MessageBox.Show("Can't start simulator! Try again, restart or re-install driver! Thank you, bsq...");
+                this.Close();
+            }
         }
 
         void DrawLogSystem(string _content)
@@ -70,13 +79,14 @@ namespace BSQSimulator
             writer.Close();
         }
 
-        void SystemEvents_DisplaySettingsChanging(object sender, EventArgs e)
-        {
-            Width = DISPLAY_W = System.Windows.Forms.SystemInformation.PrimaryMonitorSize.Width;
-            Height = DISPLAY_H = System.Windows.Forms.SystemInformation.PrimaryMonitorSize.Height;
+        //void SystemEvents_DisplaySettingsChanging(object sender, EventArgs e)
+        //{
+        //    Width = DISPLAY_W = System.Windows.Forms.SystemInformation.PrimaryMonitorSize.Width;
+        //    Height = DISPLAY_H = System.Windows.Forms.SystemInformation.PrimaryMonitorSize.Height;
 
-            DrawLogSystem("DisplaySettingsChanging: Done");
-        }
+        //    DrawLogSystem("DisplaySettingsChanging: Done");
+        //}
+
 
         void MainWindow_StateChanged(object sender, EventArgs e)
         {
@@ -124,45 +134,6 @@ namespace BSQSimulator
             DrawLogSystem("*----------------*");
         }
 
-        /*
-        private void RegisterForRawInput()
-        {
-            NativeMethods.RAWINPUTDEVICE[] rawInputDevices = new NativeMethods.RAWINPUTDEVICE[1];
-            rawInputDevices[0].usagePage = 1;
-            rawInputDevices[0].usage = 2;
-            rawInputDevices[0].flags = NativeMethods.RawInputDeviceFlags.InputSink;
-            WindowInteropHelper helper = new WindowInteropHelper(this);
-            rawInputDevices[0].hwndTarget = helper.Handle;
-            uint cbSize = (uint)Marshal.SizeOf(typeof(NativeMethods.RAWINPUTDEVICE));
-            if (!NativeMethods.RegisterRawInputDevices(rawInputDevices, 1, cbSize))
-            {
-                //MessageBox.Show(InputSimulatorResources.UnableToRegisterForRawMouseInput, InputSimulatorResources.InitializationErrorCaption, MessageBoxButton.OK, MessageBoxImage.Hand);
-                Application.Current.Shutdown(1);
-            }
-        }
-        public void SetupSimulator(Window window)
-        {
-            WindowInteropHelper helper = new WindowInteropHelper(window);
-            HwndSource source = HwndSource.FromHwnd(helper.Handle);
-            if (source != null)
-            {
-                source.AddHook(new HwndSourceHook(this.MessageProc));
-            }
-        }
-        private IntPtr MessageProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
-        {
-            if (msg == 0xff)
-            {
-                Microsoft.Surface.NativeWrappers.NativeMethods.RAWINPUT rawInput = new Microsoft.Surface.NativeWrappers.NativeMethods.RAWINPUT();
-                if (Microsoft.Surface.NativeWrappers.NativeMethods.GetRawInputMouseData(lParam, ref rawInput))
-                {
-                    //this.ProcessRawMouseInput(rawInput);
-                }
-            }
-            return IntPtr.Zero;
-        }
-        */
-
         public void addTuioObject(TuioObject tuioObject) { }
         public void updateTuioObject(TuioObject tuioObject) { }
         public void removeTuioObject(TuioObject tuioObject) { }
@@ -198,15 +169,9 @@ namespace BSQSimulator
                 }));
         }
 
-        public void refresh(long timestamp)
-        {
-            //throw new NotImplementedException();
-        }
+        public void refresh(long timestamp) { }
 
-        private void bttClose_Click(object sender, RoutedEventArgs e)
-        {
-            this.Close();
-        }
+        private void bttClose_Click(object sender, RoutedEventArgs e) { this.Close(); }
 
         private void bttConnect_Click(object sender, RoutedEventArgs e)
         {
